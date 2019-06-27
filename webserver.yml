@@ -47,7 +47,7 @@ spec:
             path: /private/var/myapp
       containers:
         - name: nginx
-          image: nginx-on-k8s:0.1
+          image: hironariy/nginx-on-k8s:latest
           imagePullPolicy: Never
           ports:
             # service から受けるポート
@@ -58,7 +58,7 @@ spec:
               name: sockets
 
         - name: rails
-          image: rails-on-k8s:latest
+          image: hironariy/rails-on-k8s:latest
           # デフォルトで pull しにいってコケるので Never させないようにする
           imagePullPolicy: Never
           env:
