@@ -58,7 +58,7 @@ spec:
               name: sockets
 
         - name: rails
-          image: rails-on-k8s:0.4
+          image: rails-on-k8s:latest
           # デフォルトで pull しにいってコケるので Never させないようにする
           imagePullPolicy: Never
           env:
