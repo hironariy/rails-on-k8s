@@ -56,11 +56,9 @@ spec:
           volumeMounts:
             - mountPath: /sockets
               name: sockets
-            - mountPath: /data
-              name: hostpath
 
         - name: rails
-          image: rails-on-k8s:0.1
+          image: rails-on-k8s:0.3
           # デフォルトで pull しにいってコケるので Never させないようにする
           imagePullPolicy: Never
           env:
@@ -78,5 +76,5 @@ spec:
           volumeMounts:
             - mountPath: /sockets
               name: sockets
-            - mountPath: /myapp
+            - mountPath: /data
               name: hostpath
