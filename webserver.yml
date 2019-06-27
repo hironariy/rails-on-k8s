@@ -44,7 +44,7 @@ spec:
           emptyDir: {}
         - name: hostpath
           hostPath:
-            path: /private/var/railstest
+            path: /private/var/myapp
       containers:
         - name: nginx
           image: nginx-on-k8s:0.1
@@ -78,5 +78,5 @@ spec:
           volumeMounts:
             - mountPath: /sockets
               name: sockets
-            - mountPath: /data
+            - mountPath: /myapp
               name: hostpath
