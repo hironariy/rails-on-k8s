@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver-service
+
+spec:
+  # ingress 経由なのでクラスタ内に閉じておく
+  type: NodePort
+  selector:
+    # これにマッチした pod に流す
+    app: rails-on-k8s
+    server: web
+  ports:
+    - name: http
+      protocol: TCP
+      # 受信するポート
+      port: 84
+      # 送信するポート
+      targetPort: http
+      nodePort: 30080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver-deployment
+  labels:
+    app: rails-on-k8s
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rails-on-k8s
+      server: web
+  template:
+    metadata:
+      labels:
+        app: rails-on-k8s
+        server: web
+    spec:
+      volumes:
+        - name: sockets
+          emptyDir: {}
+        - name: hostpath
+          hostPath:
+            path: /private/var/railstest
+      containers:
+        - name: nginx
+          image: nginx-on-k8s:0.1
+          imagePullPolicy: Never
+          ports:
+            # service から受けるポート
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - mountPath: /sockets
+              name: sockets
+            - mountPath: /data
+              name: hostpath
+
+        - name: rails
+          image: rails-on-k8s:0.1
+          # デフォルトで pull しにいってコケるので Never させないようにする
+          imagePullPolicy: Never
+          env:
+            - name: DB_HOST
+              value: mysql-master-pro.default.svc.cluster.local
+            - name: MYSQL_USER
+              value: "testdb-user" 
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                  secretKeyRef:
+                      name: mysql-user-pass
+                      key: password
+            - name: MYSQL_DATABASE
+              value: "testdb"
+          volumeMounts:
+            - mountPath: /sockets
+              name: sockets
+            - mountPath: /data
+              name: hostpath
